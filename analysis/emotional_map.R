@@ -1,4 +1,10 @@
-# Libraries
+# title: "The Experience of Cognitive Conflict is Intrinsically Rewarding (MANUSCRIPT)"
+# author of the analysis script: Marta La Pietra
+# date of creation: August 28, 2025
+# data of update: December 11, 2025
+
+#----------------------------------------------------------------------
+# Install packages
 install.packages("kableExtra")
 install.packages("purrr")
 install.packages("AICcmodavg")
@@ -40,7 +46,7 @@ load_models <- TRUE   # if you want to load the pre-trained models
 
 ## Data
 # Specify relative paths
-dir_analysis <- ("/GitHub/data/") # change according to your directory
+dir_analysis <- ("C:/Users/Marta/Nextcloud/Shared_SweetC/Experiments/ExpPrefer/GitHub/data/") # change according to your directory
 dir_parent <- str_remove(dir_analysis, "/analysis")
 dir_graphs <- str_c(dir_parent, "/graphs")
 
@@ -113,17 +119,17 @@ fig0b_plot <- ggplot(fig0_data, aes(x = valence, y = arousal, color = emotion)) 
   emotion_theme
 fig0b_plot
 
-### Fig 1 A & B
+### fig 0 A & B
 fig0_plot <- cowplot::plot_grid(fig0a_plot, fig0b_plot, labels = c("A", "B"), nrow = 1, rel_widths = c(3, 3))
 ggsave(filename=str_c(dir_graphs, "/figure0/fig0a_b.pdf"), fig0_plot, width = 10, height = 5, useDingbats=F)
 ggsave(filename=str_c(dir_graphs, "/figure0/fig0a_b.png"), fig0_plot, width = 10, height = 5)
 fig0_plot
 
 
-# If you want the colors used
-colorFig <- ggplot(fig0b_data, aes(x = meanValence, y = meanArousal, color = emotion)) + 
+# If you want the colours used
+colorfig <- ggplot(fig0b_data, aes(x = meanValence, y = meanArousal, color = emotion)) + 
   geom_point()
-color <- ggplot_build(colorFig)
+color <- ggplot_build(colorfig)
 colorLabels <- unique(color$data[[1]]["colour"])
 
 # fig0c - CONFLICT LEVELS
@@ -211,7 +217,7 @@ svm_cm$overall
 knn_cm$overall
 
 #####################################################
-# NN model view
+# Supplementary figure 4A (fig S4A): NN model view
 nn_emo_space <- expand.grid(valence = seq(-250, 250, by = 1),
                             arousal = seq(-250, 250, by = 1))
 nn_emo_space$class <- predict(nn_fit, newdata = nn_emo_space, type = "raw") # emo class
@@ -228,38 +234,14 @@ figS4a_plot <- ggplot() +
         axis.ticks = element_blank(), axis.text = element_blank(), text = element_text(size = 14), aspect.ratio = 1)
 figS4a_plot
 
-
 ggsave(filename=str_c(dir_graphs, "/supplementary/model_vision/figureS4/figS4a_nn.pdf"), figS4a_plot + theme(legend.position = "none"), width = 6, height = 6, useDingbats=F)
 ggsave(filename=str_c(dir_graphs, "/supplementary/model_vision/figureS4/figS4a_nn.png"), figS4a_plot + theme(legend.position = "none"), width = 6, height = 6)
 ggsave(filename=str_c(dir_graphs, "/supplementary/model_vision/figureS4/figS4a_nn_legend.png"), figS4a_plot + theme(legend.position = "right"), width = 6, height = 8)
 
 
-# Figure 2d: Probabilistic representation for NN
-nn_emo_probs_raw <- expand.grid(valence = seq(-250, 250, by = 1),
-                                arousal = seq(-250, 250, by = 1))
-nn_probs <- predict(nn_fit, newdata = nn_emo_probs_raw, type = "prob")
-
-nn_emo_probs <- bind_cols(nn_emo_probs_raw, nn_probs) %>%
-  pivot_longer(cols = afraid:surprised, names_to = "nn_emotion", values_to = "nn_probs")
-
-figS4d_plot <- ggplot(data = nn_emo_probs, aes(x = valence, y = arousal, color = nn_probs, group = nn_emotion)) +
-  geom_point(size = 1) +
-  scale_x_continuous(name = "Pleasantness", limits = c(-250, 250)) +
-  scale_y_continuous(name = "Arousal", limits = c(-250, 250)) +
-  facet_wrap(~nn_emotion, ncol = 4) +
-  geom_hline(yintercept = 0) +
-  geom_vline(xintercept = 0) +
-  scale_color_gradient(low = "white", high = "blue", name = "NN Probability", labels = scales::percent) +
-  theme_bw() +
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        axis.ticks = element_blank(), axis.text = element_blank(), text = element_text(size = 14), aspect.ratio = 1)
-figS4d_plot
-
-ggsave(filename=str_c(dir_graphs, "/supplementary/model_vision/figureS4/figS4a_nn.png"), figS4d_plot, width = 8, height = 8, limitsize=F)
-
 #rm(nn_fit) # optional
 
-## KNN model view
+# Supplementary figure 4B (fig S4B):KNN model view
 knn_emo_space <- expand.grid(valence = seq(-250, 250, by = 1), 
                              arousal = seq(-250, 250, by = 1))
 knn_emo_space$class <- predict(knn_fit, newdata = knn_emo_space, type = "raw") # emo class
@@ -280,7 +262,7 @@ ggsave(filename=str_c(dir_graphs, "/supplementary/model_vision/figureS4/figS4b_k
 ggsave(filename=str_c(dir_graphs, "/supplementary/model_vision/figureS4/figS4b_knn.png"), figS4b_plot + theme(legend.position = "none"), width = 6, height = 6)
 ggsave(filename=str_c(dir_graphs, "/supplementary/model_vision/figureS4/figS4b_knn_legend.png"), figS4b_plot + theme(legend.position = "right"), width = 6, height = 6)
 
-## SVM model view
+# Supplementary figure 4C (fig S4C):SVM model view
 svm_emo_space <- expand.grid(valence = seq(-250, 250, by = 1),
                              arousal = seq(-250, 250, by = 1))
 svm_emo_space$class <- predict(svm_fit, newdata = svm_emo_space, type = "raw") # emo class
@@ -327,7 +309,7 @@ emotion_theme <- theme_bw() +
 fig00_data <- df_emotion %>%
   mutate(emotion = fct_relevel(emotion, emotion_list)) %>% ungroup()
 
-# Figure00a - Contour Plots (separate density levels per plot)
+# figure00a - Contour Plots (separate density levels per plot)
 fig00a_list <- list()
 
 # Loop through each emotion dataset and make a contour plot
@@ -340,7 +322,7 @@ for (i in 1:length(emotion_list)) {
     geom_density_2d() + 
     geom_hline(yintercept = 0, color = "black") + 
     geom_vline(xintercept = 0, color = "black") +
-    scale_color_manual(values = colorLabels$colour[i]) +  # pull colors from Figure 1
+    scale_color_manual(values = colorLabels$colour[i]) +  # pull colors from figure 1
     coord_fixed(ratio = 1) +
     scale_y_continuous(limits = c(-250, 250)) + 
     scale_x_continuous(limits = c(-250, 250)) + 
@@ -365,7 +347,7 @@ fig00a_plot <- cowplot::plot_grid(plotlist=fig00a_list, ncol=4)
 fig00a_plot
 ggsave(filename = str_c(dir_graphs, "/figure0/fig0a.pdf"), plot=fig00a_plot, width = 6, height = 6)
 
-# Figure00b - 1D density
+# figure00b - 1D density
 fig00b_plot <- ggplot(fig00_data %>% pivot_longer(cols = c(valence, arousal), names_to = "measure", values_to = "value"),
                      aes(x = value, y = emotion, fill = emotion)) +
   ggridges::geom_density_ridges(scale = 3, alpha = 3/4, bandwidth = 18) +  # tweek to visualize
@@ -382,15 +364,14 @@ fig00b_plot
 ggsave(filename = str_c(dir_graphs, "/figure00/fig00b.pdf"), plot=fig00b_plot, width = 6, height = 8)
 
 
-### Fig00A & Fig00B
+### fig00A & fig00B
 fig00a_b_plot <- cowplot::plot_grid(fig00a_plot, fig00b_plot, labels = c("A", "B"), nrow = 1, rel_widths = c(9, 7))
 ggsave(filename=str_c(dir_graphs, "/figure00/fig00a_b_plot.pdf"), fig00a_b_plot, width = 10, height = 5, useDingbats=F)
 ggsave(filename=str_c(dir_graphs, "/figure00/fig00a_b_plot.png"), fig00a_b_plot, width = 10, height = 5)
 fig00a_b_plot
 
-
 #############################################################
-# Figure 5 - NN Emotion Classifications
+# figure 6 - NN Emotion Classifications
 # Requires model 
 dir_analysis_models <- ("C:/Users/Marta/Nextcloud/Shared_SweetC/Experiments/ExpPrefer/GitHub/models/")
 nn_fit <- readRDS(str_c(dir_analysis_models, "/nn_model.RDS"))
@@ -403,13 +384,13 @@ df_experiment_probs_nn$Conflict_Level <- factor(df_experiment_probs_nn$Conflict_
 # levels(df_experiment_probs_nn$Conflict_Level) <- c("High conflict", "Medium conflict", "Low conflict")
 
 
-# Fig5 data
-Fig5a_nn_data <- df_experiment_probs_nn %>%
+# fig6 data
+fig6a_nn_data <- df_experiment_probs_nn %>%
   select(sub, Conflict_Level, afraid:surprised) %>%  # Include Conflict_Level in the selection
   pivot_longer(cols = -c(sub, Conflict_Level), names_to = "nn_emotion", values_to = "nn_prob") %>%
-  group_by(Conflict_Level, nn_emotion, sub) %>%  # Group by Conflict_Level instead of recalculating
+  group_by(Conflict_Level, nn_emotion, sub) %>%  # Group by Conflict_Level 
   summarise(mean_prob_sub = mean(nn_prob), .groups = 'drop_last') %>%
-  group_by(Conflict_Level, nn_emotion) %>%  # Group by Conflict_Level instead of recalculating
+  group_by(Conflict_Level, nn_emotion) %>%  # Group by Conflict_Level 
   summarise(mean_prob = mean(mean_prob_sub), sd_prob = sd(mean_prob_sub), N = n(), se_prob = sd_prob / sqrt(N), .groups = 'drop') %>%
   mutate(lwr = mean_prob - qt(1 - (0.05 / 2), N - 1) * se_prob,
          upr = mean_prob + qt(1 - (0.05 / 2), N - 1) * se_prob) %>%
@@ -418,7 +399,7 @@ Fig5a_nn_data <- df_experiment_probs_nn %>%
          y_label = mean_prob + .04)
 
 # Filter the data and calculate the mean and standard deviation, rounded to 2 decimals
-stats <- Fig5a_nn_data %>%
+stats <- fig6a_nn_data %>%
   filter(Conflict_Level == "Medium") %>%
   filter(nn_emotion == "peppy") %>%
   summarize(
@@ -434,27 +415,33 @@ sd <- stats$sd*100
 cat("Mean:", mean, "\n")
 cat("Standard Deviation:", sd, "\n")
 
-#### Figure 5a
-# Fig5a_nn plot - probabilities by choice
+#### figure 6a
+# fig6a_nn plot - probabilities by choice
 label_size <- 4
 label_color <- "black"
-Fig5a_nn_plot <- ggplot(Fig5a_nn_data, aes(x = tidytext::reorder_within(nn_emotion, mean_prob, Conflict_Level), y = mean_prob, fill = nn_emotion)) + 
+fig6a_nn_plot <- ggplot(fig6a_nn_data, aes(x = tidytext::reorder_within(nn_emotion, mean_prob, Conflict_Level), y = mean_prob, fill = nn_emotion)) + 
   geom_col(show.legend = FALSE) + 
   geom_errorbar(aes(ymin = lwr, ymax = upr), width = .12) + 
   geom_text(aes(label = label, y = y_label), color = label_color, size = label_size) + 
-  facet_wrap(~Conflict_Level, scales = "free_y") + 
+  facet_wrap(~Conflict_Level, scales = "free_y",
+             labeller = as_labeller(c(
+               "High" = "High conflict",
+               "Medium" = "Medium conflict",
+               "Low" = "Low conflict"
+             ))) +   
   scale_y_continuous(labels = scales::label_percent(accuracy = 1L), name = "Model Likelihood", limits = c(0, .20)) +
   coord_flip() + 
   tidytext::scale_x_reordered(name = "Neural Network Emotion") + 
   theme_classic() + 
   theme(text = element_text(size = 14))
-Fig5a_nn_plot
+fig6a_nn_plot
 
-ggsave(filename=str_c(dir_graphs, "/figure5/Fig5a_nn.pdf"), Fig5a_nn_plot, width = 11, height = 4, useDingbats=F)
-ggsave(filename=str_c(dir_graphs, "/figure5/Fig5a_nn.png"), Fig5a_nn_plot, width = 11, height = 4)
+ggsave(filename=str_c(dir_graphs, "/figure6/fig6a_nn.pdf"), fig6a_nn_plot, width = 11, height = 4, useDingbats=F)
+ggsave(filename=str_c(dir_graphs, "/figure6/fig6a_nn.png"), fig6a_nn_plot, width = 11, height = 4)
 
-### Figure 5b - Delta (High - Low) by Emotion
-Fig5b_nn_data <- df_experiment_probs_nn %>%
+# -------------------------------- figure 6B 
+# DELTA HIGH VS. LOW CONFLICT
+fig6b_nn_data <- df_experiment_probs_nn %>%
   select(sub, Conflict_Level, afraid:surprised) %>%
   pivot_longer(cols = -c(sub, Conflict_Level), names_to = "nn_emotion", values_to = "nn_prob") %>%
   group_by(Conflict_Level, nn_emotion, sub) %>%
@@ -472,8 +459,26 @@ Fig5b_nn_data <- df_experiment_probs_nn %>%
   mutate(label = str_c(as.character(round(delta*100, 1)), "%"), 
          y_label = if_else(delta >= 0, delta + .01, delta - .01)) #play with this to change the position of the %
 
-# Fig 5b Plot
-Fig5b_nn_plot <- ggplot(Fig5b_nn_data, aes(x = reorder(nn_emotion, delta), y = delta, fill = nn_emotion)) + 
+fig6b_nn_data <- df_experiment_probs_nn %>%
+  select(sub, Conflict_Level, afraid:surprised) %>%
+  pivot_longer(cols = -c(sub, Conflict_Level), names_to = "nn_emotion", values_to = "nn_prob") %>%
+  group_by(Conflict_Level, nn_emotion, sub) %>%
+  summarise(mean_prob_sub = mean(nn_prob)) %>%
+  group_by(Conflict_Level, nn_emotion) %>% 
+  summarise(mean_prob = mean(mean_prob_sub), sd_prob = sd(mean_prob_sub), N = n(), se_prob = sd_prob / sqrt(N)) %>%
+  mutate(lwr = mean_prob - qt(1 - (0.05 / 2), N - 1) * se_prob,
+         upr = mean_prob + qt(1 - (0.05 / 2), N - 1) * se_prob) %>%
+  # Delta
+  select(Conflict_Level, nn_emotion, mean_prob) %>%
+  pivot_wider(names_from = Conflict_Level, values_from = mean_prob) %>% 
+  group_by(nn_emotion) %>% 
+  mutate(delta = High - Low) %>%
+  # Add numeric labels
+  mutate(label = str_c(as.character(round(delta*100, 1)), "%"), 
+         y_label = if_else(delta >= 0, delta + .01, delta - .01)) #play with this to change the position of the %
+
+# fig 6b Plot
+fig6b_nn_plot <- ggplot(fig6b_nn_data, aes(x = reorder(nn_emotion, delta), y = delta, fill = nn_emotion)) + 
   geom_col(show.legend = FALSE, position = position_dodge(.9)) + 
   geom_text(aes(label = label, y = y_label), color = label_color, size = label_size) + 
   # geom_errorbar(aes(ymin = lwr, ymax = upr), width = .12) +
@@ -489,16 +494,16 @@ Fig5b_nn_plot <- ggplot(Fig5b_nn_data, aes(x = reorder(nn_emotion, delta), y = d
     axis.text.y = element_text(color = "black"),
     text = element_text(size = 16)  # Move legend to the top
   )
-Fig5b_nn_plot
+fig6b_nn_plot
 
-ggsave(filename=str_c(dir_graphs, "/figure5/Fig5b_nn.pdf"), Fig5b_nn_plot, width = 11, height = 4, useDingbats=F)
-ggsave(filename=str_c(dir_graphs, "/figure5/Fig5b_nn.png"), Fig5b_nn_plot, width = 6, height = 6)
+ggsave(filename=str_c(dir_graphs, "/figure6/fig6b_nn.pdf"), fig6b_nn_plot, width = 11, height = 4, useDingbats=F)
+ggsave(filename=str_c(dir_graphs, "/figure6/fig6b_nn.png"), fig6b_nn_plot, width = 6, height = 6)
 
 # WITH SEM
-Fig5b_nn_data_SEM <- df_experiment_probs_nn %>%
+fig6b_nn_data_SEM <- df_experiment_probs_nn %>%
   select(sub, Conflict_Level, afraid:surprised) %>%
   pivot_longer(cols = -c(sub, Conflict_Level), names_to = "nn_emotion", values_to = "nn_prob") %>%
-  # First calculate subject-level means
+  # First, calculate subject-level means
   group_by(Conflict_Level, nn_emotion, sub) %>%
   summarise(mean_prob_sub = mean(nn_prob), .groups = "drop") %>%
   # Then calculate group statistics (preserving N)
@@ -528,7 +533,7 @@ Fig5b_nn_data_SEM <- df_experiment_probs_nn %>%
     y_label = if_else(delta >= 0, delta + 0.028, delta - 0.025)
   )
 
-Fig5b_nn_plot_SEM <- ggplot(Fig5b_nn_data_SEM, aes(x = reorder(nn_emotion, delta), y = delta, fill = nn_emotion)) + 
+fig6b_nn_plot_SEM <- ggplot(fig6b_nn_data_SEM, aes(x = reorder(nn_emotion, delta), y = delta, fill = nn_emotion)) + 
   geom_col(show.legend = FALSE) + 
   geom_errorbar(aes(ymin = delta_lwr, ymax = delta_upr), width = 0.2, color = "black") +
   geom_text(aes(label = label, y = y_label), color = label_color, size = label_size) + 
@@ -544,20 +549,13 @@ Fig5b_nn_plot_SEM <- ggplot(Fig5b_nn_data_SEM, aes(x = reorder(nn_emotion, delta
     axis.text.y = element_text(color = "black", margin = margin(t = 0, r = 15, b = 0, l = 0)),
     text = element_text(size = 16)  # Move legend to the top
   )
-Fig5b_nn_plot_SEM
+fig6b_nn_plot_SEM
 
-ggsave(filename=str_c(dir_graphs, "/figure5/Fig5b_nn_SEM.pdf"), Fig5b_nn_plot_SEM, width = 11, height = 4, useDingbats=F)
-ggsave(filename=str_c(dir_graphs, "/figure5/Fig5b_nn_SEM_1.png"), Fig5b_nn_plot_SEM, width = 7, height = 6)
-
-
-### Fig 5 All
-Fig5_nn_plot <- cowplot::plot_grid(Fig5a_nn_plot, Fig5b_nn_plot_SEM, labels = c("A", "B"), nrow = 1, rel_widths = c(6, 3))
-ggsave(filename=str_c(dir_graphs, "/figure5/Fig5_nn.pdf"), Fig5_nn_plot, width = 15, height = 5, useDingbats=F)
-ggsave(filename=str_c(dir_graphs, "/figure5/Fig5_nn.png"), Fig5_nn_plot, width = 20, height = 6)
-Fig5_nn_plot
+ggsave(filename=str_c(dir_graphs, "/figure6/fig6b_nn_SEM.pdf"), fig6b_nn_plot_SEM, width = 11, height = 4, useDingbats=F)
+ggsave(filename=str_c(dir_graphs, "/figure6/fig6b_nn_SEM_1.png"), fig6b_nn_plot_SEM, width = 7, height = 6)
 
 # Filter the data and calculate the mean and standard deviation, rounded to 2 decimals
-stats <- Fig5b_nn_data %>%
+stats <- fig6b_nn_data %>%
   filter(nn_emotion == "quiet") %>%
   summarize(
     mean = round(mean(delta, na.rm = TRUE), 4),
@@ -571,8 +569,215 @@ mean <- stats$mean*100
 cat("Delta %:", mean, "\n")
 
 #--------------------------------------------------------------------------
+# DELTA HIGH VS. MEDIUM
+### Delta (High - Medium) by Emotion
+fig6c_nn_data <- df_experiment_probs_nn %>%
+  select(sub, Conflict_Level, afraid:surprised) %>%
+  pivot_longer(cols = -c(sub, Conflict_Level), names_to = "nn_emotion", values_to = "nn_prob") %>%
+  group_by(Conflict_Level, nn_emotion, sub) %>%
+  summarise(mean_prob_sub = mean(nn_prob)) %>%
+  group_by(Conflict_Level, nn_emotion) %>% 
+  summarise(mean_prob = mean(mean_prob_sub), sd_prob = sd(mean_prob_sub), N = n(), se_prob = sd_prob / sqrt(N)) %>%
+  mutate(lwr = mean_prob - qt(1 - (0.05 / 2), N - 1) * se_prob,
+         upr = mean_prob + qt(1 - (0.05 / 2), N - 1) * se_prob) %>%
+  # Delta
+  select(Conflict_Level, nn_emotion, mean_prob) %>%
+  pivot_wider(names_from = Conflict_Level, values_from = mean_prob) %>% 
+  group_by(nn_emotion) %>% 
+  mutate(delta = High - Medium) %>%
+  # Add numeric labels
+  mutate(label = str_c(as.character(round(delta*100, 1)), "%"), 
+         y_label = if_else(delta >= 0, delta + .01, delta - .01)) #play with this to change the position of the %
+
+# PLOT
+fig6c_nn_plot <- ggplot(fig6c_nn_data, aes(x = reorder(nn_emotion, delta), y = delta, fill = nn_emotion)) + 
+  geom_col(show.legend = FALSE, position = position_dodge(.9)) + 
+  geom_text(aes(label = label, y = y_label), color = label_color, size = label_size) + 
+  # geom_errorbar(aes(ymin = lwr, ymax = upr), width = .12) +
+  scale_y_continuous(labels = scales::percent, name = "Δ Model Likelihood (High - Medium Conflict)", expand = c(.03, .03)) +
+  xlab("NN Emotion") + 
+  theme_classic() + 
+  coord_flip() + 
+  theme(
+    panel.grid.major = element_blank(),  # Remove major grid lines
+    panel.grid.minor = element_blank(),  # Remove minor grid lines
+    axis.line = element_line(color = "black"),  # Add axis lines
+    axis.text.x = element_text(color = "black"),
+    axis.text.y = element_text(color = "black"),
+    text = element_text(size = 16)  # Move legend to the top
+  )
+fig6c_nn_plot
+
+ggsave(filename=str_c(dir_graphs, "/figure6/fig6c_nn.pdf"), fig6c_nn_plot, width = 11, height = 4, useDingbats=F)
+ggsave(filename=str_c(dir_graphs, "/figure6/fig6c_nn.png"), fig6c_nn_plot, width = 6, height = 6)
+
+# WITH SEM
+fig6c_nn_data_SEM <- df_experiment_probs_nn %>%
+  select(sub, Conflict_Level, afraid:surprised) %>%
+  pivot_longer(cols = -c(sub, Conflict_Level), names_to = "nn_emotion", values_to = "nn_prob") %>%
+  # First calculate subject-level means
+  group_by(Conflict_Level, nn_emotion, sub) %>%
+  summarise(mean_prob_sub = mean(nn_prob), .groups = "drop") %>%
+  # Then calculate group statistics (preserving N)
+  group_by(Conflict_Level, nn_emotion) %>%
+  summarise(
+    mean_prob = mean(mean_prob_sub),
+    sd_prob = sd(mean_prob_sub),
+    N = n(),
+    se_prob = sd_prob / sqrt(N),
+    .groups = "drop"
+  ) %>%
+  # Pivot wider while keeping all necessary columns
+  pivot_wider(
+    names_from = Conflict_Level,
+    values_from = c(mean_prob, sd_prob, N, se_prob),
+    names_sep = "."
+  ) %>%
+  # Calculate delta and its SEM
+  mutate(
+    delta = mean_prob.High - mean_prob.Medium,
+    delta_se = sqrt(se_prob.High^2 + se_prob.Medium^2),
+    N_combined = min(N.High, N.Medium),  # Use the smaller N for t-distribution
+    delta_lwr = delta - qt(1 - (0.05 / 2), N_combined - 1) * delta_se,
+    delta_upr = delta + qt(1 - (0.05 / 2), N_combined - 1) * delta_se,
+    # Add labels
+    label = str_c(as.character(round(delta*100, 1)), "%"),
+    y_label = if_else(delta >= 0, delta + 0.03, delta - 0.025) # here to change the position of the percentage values
+  )
+
+fig6c_nn_plot_SEM <- ggplot(fig6c_nn_data_SEM, aes(x = reorder(nn_emotion, delta), y = delta, fill = nn_emotion)) + 
+  geom_col(show.legend = FALSE) + 
+  geom_errorbar(aes(ymin = delta_lwr, ymax = delta_upr), width = 0.2, color = "black") +
+  geom_text(aes(label = label, y = y_label), color = label_color, size = label_size) + 
+  scale_y_continuous(labels = scales::percent, name = "Δ Model Likelihood (High - Medium Conflict)") +
+  xlab("Neural Network Emotion") + 
+  coord_flip() +
+  theme_classic() + 
+  theme(
+    panel.grid.major = element_blank(),  # Remove major grid lines
+    panel.grid.minor = element_blank(),  # Remove minor grid lines
+    axis.line = element_line(color = "black"),  # Add axis lines
+    axis.text.x = element_text(color = "black"),
+    axis.text.y = element_text(color = "black", margin = margin(t = 0, r = 15, b = 0, l = 0)), # Questo aggiunge spazio nelle labels delle emozioni!
+    text = element_text(size = 16)  # Move legend to the top
+  )
+fig6c_nn_plot_SEM
+
+ggsave(filename=str_c(dir_graphs, "/figure6/fig6c_nn_SEM.pdf"), fig6c_nn_plot_SEM, width = 7, height = 6, useDingbats=F)
+ggsave(filename=str_c(dir_graphs, "/figure6/fig6c_nn_SEM_1.png"), fig6c_nn_plot_SEM, width = 7, height = 6)
+
+#--------------------------------------------------------------------------
+# DELTA MEDIUM vs LOW
+### Delta (Medium - Low) by Emotion
+fig6d_nn_data <- df_experiment_probs_nn %>%
+  select(sub, Conflict_Level, afraid:surprised) %>%
+  pivot_longer(cols = -c(sub, Conflict_Level), names_to = "nn_emotion", values_to = "nn_prob") %>%
+  group_by(Conflict_Level, nn_emotion, sub) %>%
+  summarise(mean_prob_sub = mean(nn_prob)) %>%
+  group_by(Conflict_Level, nn_emotion) %>% 
+  summarise(mean_prob = mean(mean_prob_sub), sd_prob = sd(mean_prob_sub), N = n(), se_prob = sd_prob / sqrt(N)) %>%
+  mutate(lwr = mean_prob - qt(1 - (0.05 / 2), N - 1) * se_prob,
+         upr = mean_prob + qt(1 - (0.05 / 2), N - 1) * se_prob) %>%
+  # Delta
+  select(Conflict_Level, nn_emotion, mean_prob) %>%
+  pivot_wider(names_from = Conflict_Level, values_from = mean_prob) %>% 
+  group_by(nn_emotion) %>% 
+  mutate(delta = Medium - Low) %>%
+  # Add numeric labels
+  mutate(label = str_c(as.character(round(delta*100, 1)), "%"), 
+         y_label = if_else(delta >= 0, delta + .01, delta - .01)) #play with this to change the position of the %
+
+# PLOT
+fig6d_nn_plot <- ggplot(fig6d_nn_data, aes(x = reorder(nn_emotion, delta), y = delta, fill = nn_emotion)) + 
+  geom_col(show.legend = FALSE, position = position_dodge(.9)) + 
+  geom_text(aes(label = label, y = y_label), color = label_color, size = label_size) + 
+  # geom_errorbar(aes(ymin = lwr, ymax = upr), width = .12) +
+  scale_y_continuous(labels = scales::percent, name = "Δ Model Likelihood (Medium - Low Conflict)", expand = c(.03, .03)) +
+  xlab("NN Emotion") + 
+  theme_classic() + 
+  coord_flip() + 
+  theme(
+    panel.grid.major = element_blank(),  # Remove major grid lines
+    panel.grid.minor = element_blank(),  # Remove minor grid lines
+    axis.line = element_line(color = "black"),  # Add axis lines
+    axis.text.x = element_text(color = "black"),
+    axis.text.y = element_text(color = "black"),
+    text = element_text(size = 16)  # Move legend to the top
+  )
+fig6d_nn_plot
+
+ggsave(filename=str_c(dir_graphs, "/figure6/fig6d_nn.pdf"), fig6d_nn_plot, width = 11, height = 4, useDingbats=F)
+ggsave(filename=str_c(dir_graphs, "/figure6/fig6d_nn.png"), fig6d_nn_plot, width = 6, height = 6)
+
+# WITH SEM
+fig6d_nn_data_SEM <- df_experiment_probs_nn %>%
+  select(sub, Conflict_Level, afraid:surprised) %>%
+  pivot_longer(cols = -c(sub, Conflict_Level), names_to = "nn_emotion", values_to = "nn_prob") %>%
+  # First calculate subject-level means
+  group_by(Conflict_Level, nn_emotion, sub) %>%
+  summarise(mean_prob_sub = mean(nn_prob), .groups = "drop") %>%
+  # Then calculate group statistics (preserving N)
+  group_by(Conflict_Level, nn_emotion) %>%
+  summarise(
+    mean_prob = mean(mean_prob_sub),
+    sd_prob = sd(mean_prob_sub),
+    N = n(),
+    se_prob = sd_prob / sqrt(N),
+    .groups = "drop"
+  ) %>%
+  # Pivot wider while keeping all necessary columns
+  pivot_wider(
+    names_from = Conflict_Level,
+    values_from = c(mean_prob, sd_prob, N, se_prob),
+    names_sep = "."
+  ) %>%
+  # Calculate delta and its SEM
+  mutate(
+    delta = mean_prob.Medium - mean_prob.Low,
+    delta_se = sqrt(se_prob.Medium^2 + se_prob.Low^2),
+    N_combined = min(N.Medium, N.Low),  # Use the smaller N for t-distribution
+    delta_lwr = delta - qt(1 - (0.05 / 2), N_combined - 1) * delta_se,
+    delta_upr = delta + qt(1 - (0.05 / 2), N_combined - 1) * delta_se,
+    # Add labels
+    label = str_c(as.character(round(delta*100, 1)), "%"),
+    y_label = if_else(delta >= 0, delta + 0.03, delta - 0.03)
+  )
+
+fig6d_nn_plot_SEM <- ggplot(fig6d_nn_data_SEM, aes(x = reorder(nn_emotion, delta), y = delta, fill = nn_emotion)) + 
+  geom_col(show.legend = FALSE) + 
+  geom_errorbar(aes(ymin = delta_lwr, ymax = delta_upr), width = 0.2, color = "black") +
+  geom_text(aes(label = label, y = y_label), color = label_color, size = label_size) + 
+  scale_y_continuous(labels = scales::percent, name = "Δ Model Likelihood (Medium - Low Conflict)") +
+  xlab("Neural Network Emotion") + 
+  coord_flip() +
+  theme_classic() + 
+  theme(
+    panel.grid.major = element_blank(),  # Remove major grid lines
+    panel.grid.minor = element_blank(),  # Remove minor grid lines
+    axis.line = element_line(color = "black"),  # Add axis lines
+    axis.text.x = element_text(color = "black"),
+    axis.text.y = element_text(color = "black", margin = margin(t = 0, r = 15, b = 0, l = 0)), # Questo aggiunge spazio nelle labels delle emozioni!
+    text = element_text(size = 16)  # Move legend to the top
+  )
+fig6d_nn_plot_SEM
+
+ggsave(filename=str_c(dir_graphs, "/figure6/fig6d_nn_SEM.pdf"), fig6d_nn_plot_SEM, width = 11, height = 4, useDingbats=F)
+ggsave(filename=str_c(dir_graphs, "/figure6/fig6d_nn_SEM_1.png"), fig6d_nn_plot_SEM, width = 7, height = 6)
+
+all_deltas <- cowplot::plot_grid(fig6b_nn_plot_SEM, fig6c_nn_plot_SEM,fig6d_nn_plot_SEM,  labels = c("B", "C","D"), nrow = 1, rel_widths = c(3, 3))
+ggsave(filename=str_c(dir_graphs, "/all_deltas.pdf"), all_deltas, width = 18, height =6 , useDingbats=F)
+ggsave(filename=str_c(dir_graphs, "/all_deltas.png"), all_deltas, width = 18, height = 6)
+all_deltas
+
+fig6a <- cowplot::plot_grid(fig6a_nn_plot,  labels = c("A"), nrow = 1, rel_widths = c(3, 3))
+ggsave(filename=str_c(dir_graphs, "/first_plot.pdf"), first_plot, width = 15, height = 6, useDingbats=F)
+ggsave(filename=str_c(dir_graphs, "/first_plot.png"), first_plot, width = 15, height = 6)
+fig6a
+
+#------------------------------------------------------------
 # DELTA PER SUBJECTS
-Fig5b_nn_data_sub <- df_experiment_probs_nn %>%
+# High vs. low
+fig6b_nn_data_sub <- df_experiment_probs_nn %>%
   select(sub, Conflict_Level, afraid:surprised) %>%
   pivot_longer(cols = -c(sub, Conflict_Level), names_to = "nn_emotion", values_to = "nn_prob") %>%
   group_by(sub, Conflict_Level, nn_emotion) %>%
@@ -580,22 +785,42 @@ Fig5b_nn_data_sub <- df_experiment_probs_nn %>%
   pivot_wider(names_from = Conflict_Level, values_from = mean_prob_sub) %>%
   mutate(delta = High - Low) # Delta per subject
 
-# # Filter the data and calculate the mean and standard deviation, rounded to 2 decimals
-# stats <- Fig5b_nn_data_sub %>%
-#   group_by(nn_emotion) %>%
-#   filter(nn_emotion == "surprised") %>%
-#   summarize(
-#     mean = round(mean(delta, na.rm = TRUE), 4),
-#     sd = round(sd(delta, na.rm = TRUE), 4)
-#   )
-# 
-# # Extract and print the values individually
-# mean <- stats$mean*100
-# 
-# # Print with two decimals
-# cat("Delta %:", mean, "\n")
+# High vs. medium
+ fig6c_nn_data_sub <- df_experiment_probs_nn %>%
+  select(sub, Conflict_Level, afraid:surprised) %>%
+  pivot_longer(cols = -c(sub, Conflict_Level), names_to = "nn_emotion", values_to = "nn_prob") %>%
+  group_by(sub, Conflict_Level, nn_emotion) %>%
+  summarise(mean_prob_sub = mean(nn_prob), .groups = "drop") %>%
+  pivot_wider(names_from = Conflict_Level, values_from = mean_prob_sub) %>%
+  mutate(delta = High - Medium) # Delta per subject
 
-# Function to perform t-test and Cohen's d
+# Medium vs. low
+ fig6d_nn_data_sub <- df_experiment_probs_nn %>%
+  select(sub, Conflict_Level, afraid:surprised) %>%
+  pivot_longer(cols = -c(sub, Conflict_Level), names_to = "nn_emotion", values_to = "nn_prob") %>%
+  group_by(sub, Conflict_Level, nn_emotion) %>%
+  summarise(mean_prob_sub = mean(nn_prob), .groups = "drop") %>%
+  pivot_wider(names_from = Conflict_Level, values_from = mean_prob_sub) %>%
+  mutate(delta = Medium - Low) # Delta per subject
+
+
+# Filter the data and calculate the mean and standard deviation, rounded to 2 decimals
+stats <- fig6c_nn_data_sub %>% # fig6c_nn_data_sub # fig6d_nn_data_sub
+  group_by(nn_emotion) %>%
+  filter(nn_emotion == "enthusiastic") %>%
+  summarize(
+    mean = round(mean(delta, na.rm = TRUE), 4),
+    sd = round(sd(delta, na.rm = TRUE), 4)
+  )
+
+# Extract and print the values individually
+mean <- stats$mean*100
+
+# Print with two decimals
+cat("Delta %:", mean, "\n")
+
+#-------------------------------------------------- Statistical test comparing each emotion against a theoretical baseline of zero 
+# Function to perform one-sample two-tailed t-tests and Cohen's d
 compute_tests <- function(df) {
   emotion <- unique(df$nn_emotion) # Extract the emotion label
   
@@ -606,65 +831,26 @@ compute_tests <- function(df) {
   bind_cols(t_test_result, cohens_d_result) %>% mutate(nn_emotion = emotion)
 }
 
-# Apply function to each subset of data
-Fig5a_nn_tests_zero_1 <- Fig5b_nn_data_sub %>%
+# Delta High vs. Low Conflict
+fig6a_nn_tests_zero <- fig6b_nn_data_sub %>%
   group_split(nn_emotion) %>%
   map_dfr(compute_tests)
-Fig5a_nn_tests_zero_1
+fig6a_nn_tests_zero
 
-write.xlsx(Fig5a_nn_tests_zero_1, "Github/data/experiments_emotions_delta_values.xlsx") # change according to your directory
+write.xlsx(fig6a_nn_tests_zero, "C:/Users/Marta/Nextcloud/Shared_SweetC/Experiments/ExpPrefer/GitHub/results/delta_high_low.xlsx")
 
-# # Top three emotions vs. 0
-# Fig5a_nn_tests1 <- Fig5b_nn_data_sub %>%
-#   filter(nn_emotion == "surprised") %>%
-#   t_test(delta ~ 1, mu = 0) %>%
-#   add_significance() %>%
-#   bind_cols(Fig5b_nn_data_sub %>%
-#               filter(nn_emotion == "surprised") %>%
-#               cohens_d(delta ~ 1, mu = 0) %>% select(effsize))
-# Fig5a_nn_tests_zero <- bind_rows(Fig5a_nn_tests1, ETC.)
-# Fig5a_nn_tests_zero
+# Delta High vs. Medium Conflict
+fig6c_nn_tests_zero <- fig6c_nn_data_sub %>%
+  group_split(nn_emotion) %>%
+  map_dfr(compute_tests)
+fig6c_nn_tests_zero
 
-# Top three emotions vs. negative emotions
-Fig5a_nn_tests2 <- Fig5a_nn_data_tests %>%
-  filter(Conflict_Level == "High", nn_emotion %in% c("surprised", "nervous")) %>%
-  t_test(mean_prob_sub ~ nn_emotion, paired = TRUE) %>%
-  add_significance() %>%
-  bind_cols(Fig5a_nn_data_tests %>%
-              filter(Conflict_Level == "High", nn_emotion %in% c("surprised", "nervous")) %>%
-              cohens_d(mean_prob_sub ~ nn_emotion, paired = TRUE) %>% select(effsize))
+write.xlsx(fig6c_nn_tests_zero, "C:/Users/Marta/Nextcloud/Shared_SweetC/Experiments/ExpPrefer/GitHub/results/delta_high_medium.xlsx")
 
-Fig5a_nn_tests2 <- Fig5a_nn_data_tests %>%
-  filter(Conflict_Level == "High", nn_emotion %in% c("surprised", "annoyed")) %>%
-  t_test(mean_prob_sub ~ nn_emotion, paired = TRUE) %>%
-  add_significance() %>%
-  bind_cols(Fig5a_nn_data_tests %>%
-              filter(Conflict_Level == "High", nn_emotion %in% c("surprised", "annoyed")) %>%
-              cohens_d(mean_prob_sub ~ nn_emotion, paired = TRUE) %>% select(effsize))
+# Delta Medium vs. Low Conflict
+fig6d_nn_tests_zero <- fig6d_nn_data_sub %>%
+  group_split(nn_emotion) %>%
+  map_dfr(compute_tests)
+fig6d_nn_tests_zero
 
-Fig5a_nn_tests3 <- Fig5a_nn_data_tests %>%
-  filter(Conflict_Level == "High", nn_emotion %in% c("surprised", "angry")) %>%
-  t_test(mean_prob_sub ~ nn_emotion, paired = TRUE) %>%
-  add_significance() %>%
-  bind_cols(Fig5a_nn_data_tests %>%
-              filter(Conflict_Level == "High", nn_emotion %in% c("surprised", "angry")) %>%
-              cohens_d(mean_prob_sub ~ nn_emotion, paired = TRUE) %>% select(effsize))
-
-Fig5a_nn_tests4 <- Fig5a_nn_data_tests %>%
-  filter(Conflict_Level == "High", nn_emotion %in% c("surprised", "sad")) %>%
-  t_test(mean_prob_sub ~ nn_emotion, paired = TRUE) %>%
-  add_significance() %>%
-  bind_cols(Fig5a_nn_data_tests %>%
-              filter(Conflict_Level == "High", nn_emotion %in% c("surprised", "sad")) %>%
-              cohens_d(mean_prob_sub ~ nn_emotion, paired = TRUE) %>% select(effsize))
-
-Fig5a_nn_tests5 <- Fig5a_nn_data_tests %>%
-  filter(Conflict_Level == "High", nn_emotion %in% c("surprised", "disappointed")) %>%
-  t_test(mean_prob_sub ~ nn_emotion, paired = TRUE) %>%
-  add_significance() %>%
-  bind_cols(Fig5a_nn_data_tests %>%
-              filter(Conflict_Level == "High", nn_emotion %in% c("surprised", "disappointed")) %>%
-              cohens_d(mean_prob_sub ~ nn_emotion, paired = TRUE) %>% select(effsize))
-
-Fig5a_nn_tests_all <- bind_rows(Fig5a_nn_tests1, Fig5a_nn_tests2, Fig5a_nn_tests3, Fig5a_nn_tests4, Fig5a_nn_tests5)
-Fig5a_nn_tests_all
+write.xlsx(fig6d_nn_tests_zero, "C:/Users/Marta/Nextcloud/Shared_SweetC/Experiments/ExpPrefer/GitHub/results/delta_medium_low.xlsx")
