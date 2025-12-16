@@ -1,4 +1,10 @@
-# Libraries
+# title: "The Experience of Cognitive Conflict is Intrinsically Rewarding (MANUSCRIPT)"
+# author of the analysis script: Marta La Pietra
+# date of creation: August 28, 2025
+# data of update: December 11, 2025
+
+#----------------------------------------------------------------------
+# Install packages
 install.packages("kableExtra")
 install.packages("purrr")
 install.packages("AICcmodavg")
@@ -23,7 +29,7 @@ library(readxl)
 library(dplyr)
 
 # Load data
-data_dir <- ("Github/data/") # change according to your directory
+dir_analysis <- ("C:/Users/Marta/Nextcloud/Shared_SweetC/Experiments/ExpPrefer/GitHub/data/") # change according to your directory
 df_emotion <- read_excel(str_c(data_dir, "emotional_map_experiments_pilots.xlsx"))
 
 # Step 1: Reset the 'sub' number (they all performed different tasks)
@@ -168,4 +174,5 @@ write_csv(df_test_nn, str_c(data_dir, "/df_test.csv"))
 
 # Session Info
 writeLines(capture.output(sessionInfo()), str_c(data_dir, "/sessionInfo.txt")) # session info
+
 
