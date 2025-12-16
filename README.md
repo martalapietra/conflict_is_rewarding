@@ -4,4 +4,4 @@ Data and analysis scripts for the preprint "Cognitive conflict is intrinsically 
 # Folders
 This repository contains two main folders:
 1. **data**: cleaned data from all experiments and pilot experiments;
-2. **analysis**: R scripts for model creation, data analysis and visualisation.
+2. **analysis**: R and Python scripts for model creation, data analysis and visualisation.
