@@ -1,5 +1,20 @@
-# title: "Cognitive conflict is intrisically rewarding (MANUSCRIPT)"
-# author: "Marta La Pietra"
+# title: "The Experience of Cognitive conflict is intrisically rewarding (MANUSCRIPT)"
+# author of the analysis script: Marta La Pietra
+# date of creation: August 28, 2025
+# data of update: December 11, 2025
+
+#----------------------------------------------------------------------
+# Install packages
+install.packages("tidyverse")    # tidy functions
+install.packages("tidytext")
+install.packages("readxl")
+install.packages("sjPlot")       # tab_model
+install.packages("ggeffects")
+install.packages("ggplot2")
+install.packages("ggbeeswarm")
+install.packages("ggsignif")
+install.packages("ggsignif")
+install.packages("beeswarm")
 
 # Libraries
 library(tidyverse)    # tidy functions
@@ -8,25 +23,22 @@ library(readxl)
 library(sjPlot)       # tab_model
 library(ggeffects)
 library(ggplot2)
-# install.packages("ggbeeswarm")
 library(ggbeeswarm)
-# install.packages("ggsignif")
 library(ggsignif)
-# install.packages("beeswarm")
 library(beeswarm)
 
 ## Data
 # Specify relative paths
-dir_analysis <- ("Github/data/") # change according to your directory
+dir_analysis <- ("C:/Users/Marta/Nextcloud/Shared_SweetC/Experiments/ExpPrefer/GitHub/data/") # change according to your directory
 dir_parent <- str_remove(dir_analysis, "/analysis")
 dir_graphs <- str_c(dir_parent, "/graphs")
 
 #-------------------------- Analysis of the proportions of participants' choices for the level of conflict
 # Load data
-data <- read_excel(str_c(dir_analysis, "experiments_conflict_proportions.xlsx")) #pilots_conflict_proportions #experiments_conflict_proportions
+data <- read_excel(str_c(dir_analysis, "experiments_conflict_proportions.xlsx")) # pilots_conflict_proportions # experiments_conflict_proportions
 
 # Choose the experiment you want to analyse
-data <- data[data$Experiment == "Simon", ] #"Stroop" OR "Simon"
+data <- data[data$Experiment == "Simon", ] #"Stroop" OR "Simon" # CHANGE THE EXPERIMENT NAME HERE
 
 plot_width = 6
 plot_height = 6
@@ -99,12 +111,20 @@ res.aov <- aov(Proportion ~ Conflict_Level, data = fig2_data)
 # Summary of the analysis
 summary(res.aov)
 
+#Effect size calculation
+a <- summary(res.aov)
+SS_effect <- a[[1]]["Conflict_Level", "Sum Sq"]
+SS_total  <- sum(a[[1]][, "Sum Sq"])
+eta_sq <- SS_effect / SS_total
+eta_sq
+
+# POST-HOC T-TESTS
 # Reshape the data to wide format
 wide_data <- fig2_data %>%
   pivot_wider(names_from = Conflict_Level, values_from = Proportion)
 
 # Perform the paired t-test
-t_test_result <- t.test(wide_data$High, wide_data$Low, paired = TRUE)
+t_test_result <- t.test(wide_data$High, wide_data$Medium, paired = TRUE) # Change the conflict level: wide_data$High, wide_data$Medium, wide_data$Low
 # View the result
 print(t_test_result)
 
@@ -129,7 +149,7 @@ significance_level <- 0.05
 significant_comparisons <- which(p_values < significance_level, arr.ind = TRUE)
 
 # Define significance annotations
-rfig2_plot_sign <- fig2_plot +
+fig2_plot_sign <- fig2_plot +
   geom_signif(comparisons = list(c("Medium", "Low"), c("High", "Medium"), c("High", "Low")),
               annotations = c("*",  "***", "n.s."),  # Adjust based on p-values
               color = "black",
@@ -188,7 +208,7 @@ ggsave(filename=str_c(dir_graphs, "/figure2/fig2_sign_chance.png"), fig2_plot_si
 
 #---------------------------------------------------------
 # Experiment 2: Final choice for the Stroop task
-dir_analysis <- ("Github/data/") # change according to your directory
+dir_analysis <- ("C:/Users/Marta/Nextcloud/Shared_SweetC/Experiments/ExpPrefer/GitHub/data/") # change according to your directory
 dir_parent <- str_remove(dir_analysis, "/analysis")
 dir_graphs <- str_c(dir_parent, "/graphs")
 final_slider <- read_excel(str_c(dir_analysis, "experiment2_final_choice_conflict.xlsx"))
