@@ -29,7 +29,7 @@ library(readxl)
 library(dplyr)
 
 # Load data
-dir_analysis <- ("C:/Users/Marta/Nextcloud/Shared_SweetC/Experiments/ExpPrefer/GitHub/data/") # change according to your directory
+dir_analysis <- ("/GitHub/data/") # change according to your directory
 df_emotion <- read_excel(str_c(data_dir, "emotional_map_experiments_pilots.xlsx"))
 
 # Step 1: Reset the 'sub' number (they all performed different tasks)
@@ -174,5 +174,6 @@ write_csv(df_test_nn, str_c(data_dir, "/df_test.csv"))
 
 # Session Info
 writeLines(capture.output(sessionInfo()), str_c(data_dir, "/sessionInfo.txt")) # session info
+
 
 
