@@ -11,7 +11,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import os
 
-file_excel = 'C:/Users/Marta/Nextcloud/Shared_SweetC/Experiments/ExpPrefer/GitHub/data/experiments_block_differences.xlsx'
+file_excel = '/GitHub/data/experiments_block_differences.xlsx'
 df = pd.read_excel(file_excel)
 
 experiment = df[df['Experiment'] == "Stroop"] ## CHANGE THE EXPERIMENT NAME HERE: Simon or Stroop
@@ -58,4 +58,5 @@ fig_path_pdf = os.path.join(fig_folder, "fig4B.pdf")
 plt.savefig(fig_path_pdf, format='pdf', bbox_inches='tight')
 fig_path_png = os.path.join(fig_folder, "fig4B.png")
 plt.savefig(fig_path_png, format='png', dpi=300, bbox_inches='tight')
+
 
