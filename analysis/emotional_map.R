@@ -46,7 +46,7 @@ load_models <- TRUE   # if you want to load the pre-trained models
 
 ## Data
 # Specify relative paths
-dir_analysis <- ("C:/Users/Marta/Nextcloud/Shared_SweetC/Experiments/ExpPrefer/GitHub/data/") # change according to your directory
+dir_analysis <- ("/GitHub/data/") # change according to your directory
 dir_parent <- str_remove(dir_analysis, "/analysis")
 dir_graphs <- str_c(dir_parent, "/graphs")
 
@@ -373,7 +373,7 @@ fig00a_b_plot
 #############################################################
 # figure 6 - NN Emotion Classifications
 # Requires model 
-dir_analysis_models <- ("C:/Users/Marta/Nextcloud/Shared_SweetC/Experiments/ExpPrefer/GitHub/models/")
+dir_analysis_models <- ("/GitHub/models/")
 nn_fit <- readRDS(str_c(dir_analysis_models, "/nn_model.RDS"))
 experiment_nn <- predict(nn_fit, newdata = df_experiment, type = "prob")
 df_experiment_probs_nn <- df_experiment %>% bind_cols(experiment_nn)
@@ -837,7 +837,7 @@ fig6a_nn_tests_zero <- fig6b_nn_data_sub %>%
   map_dfr(compute_tests)
 fig6a_nn_tests_zero
 
-write.xlsx(fig6a_nn_tests_zero, "C:/Users/Marta/Nextcloud/Shared_SweetC/Experiments/ExpPrefer/GitHub/results/delta_high_low.xlsx")
+write.xlsx(fig6a_nn_tests_zero, "/GitHub/results/delta_high_low.xlsx")
 
 # Delta High vs. Medium Conflict
 fig6c_nn_tests_zero <- fig6c_nn_data_sub %>%
@@ -845,7 +845,7 @@ fig6c_nn_tests_zero <- fig6c_nn_data_sub %>%
   map_dfr(compute_tests)
 fig6c_nn_tests_zero
 
-write.xlsx(fig6c_nn_tests_zero, "C:/Users/Marta/Nextcloud/Shared_SweetC/Experiments/ExpPrefer/GitHub/results/delta_high_medium.xlsx")
+write.xlsx(fig6c_nn_tests_zero, "/GitHub/results/delta_high_medium.xlsx")
 
 # Delta Medium vs. Low Conflict
 fig6d_nn_tests_zero <- fig6d_nn_data_sub %>%
@@ -853,4 +853,5 @@ fig6d_nn_tests_zero <- fig6d_nn_data_sub %>%
   map_dfr(compute_tests)
 fig6d_nn_tests_zero
 
-write.xlsx(fig6d_nn_tests_zero, "C:/Users/Marta/Nextcloud/Shared_SweetC/Experiments/ExpPrefer/GitHub/results/delta_medium_low.xlsx")
+write.xlsx(fig6d_nn_tests_zero, "/GitHub/results/delta_medium_low.xlsx")
+
