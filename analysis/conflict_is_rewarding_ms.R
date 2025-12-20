@@ -29,7 +29,7 @@ library(beeswarm)
 
 ## Data
 # Specify relative paths
-dir_analysis <- ("C:/Users/Marta/Nextcloud/Shared_SweetC/Experiments/ExpPrefer/GitHub/data/") # change according to your directory
+dir_analysis <- ("/GitHub/data/") # change according to your directory
 dir_parent <- str_remove(dir_analysis, "/analysis")
 dir_graphs <- str_c(dir_parent, "/graphs")
 
@@ -208,7 +208,7 @@ ggsave(filename=str_c(dir_graphs, "/figure2/fig2_sign_chance.png"), fig2_plot_si
 
 #---------------------------------------------------------
 # Experiment 2: Final choice for the Stroop task
-dir_analysis <- ("C:/Users/Marta/Nextcloud/Shared_SweetC/Experiments/ExpPrefer/GitHub/data/") # change according to your directory
+dir_analysis <- ("/GitHub/data/") # change according to your directory
 dir_parent <- str_remove(dir_analysis, "/analysis")
 dir_graphs <- str_c(dir_parent, "/graphs")
 final_slider <- read_excel(str_c(dir_analysis, "experiment2_final_choice_conflict.xlsx"))
@@ -350,4 +350,5 @@ fig3b_plot_sign
 
 ggsave(filename=str_c(dir_graphs, "/figure3/fig3_sign.pdf"), fig3b_plot_sign, width = 6, height = 5, useDingbats=F)
 ggsave(filename=str_c(dir_graphs, "/figure3/fig3_sign.png"), fig3b_plot_sign, width = 6, height = 6)
+
 
