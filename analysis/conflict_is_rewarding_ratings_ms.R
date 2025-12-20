@@ -36,7 +36,7 @@ library(marginaleffects)
 
 
 # RATINGS: EFFORT & ENJOYMENT
-dir_analysis <- ("C:/Users/Marta/Nextcloud/Shared_SweetC/Experiments/ExpPrefer/GitHub/data/") # change according to your directory
+dir_analysis <- ("/GitHub/data/") # change according to your directory
 dir_parent <- str_remove(dir_analysis, "/analysis")
 dir_graphs <- str_c(dir_parent, "/graphs")
 
@@ -265,3 +265,4 @@ fig5b_plot_both
 
 ggsave(filename=str_c(dir_graphs, "/figure5/fig5b_Simon_Stroop.pdf"), fig5b_plot_both, width = 9, height = 5, useDingbats=F)
 ggsave(filename=str_c(dir_graphs, "/figure5/fig5b_Simon_Stroop.png"), fig5b_plot_both, width = 10, height = 5.5)
+
