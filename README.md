@@ -1,5 +1,5 @@
-# Cognitive conflict is intrinsically rewarding
-Data and analysis scripts for the preprint "Cognitive conflict is intrinsically rewarding" - DOI: https://doi.org/10.31234/osf.io/b83mn_v2.
+# The experience of cognitive conflict is intrinsically rewarding
+Data and analysis scripts for the preprint "The experience of cognitive conflict is intrinsically rewarding" - DOI: https://doi.org/10.31234/osf.io/b83mn_v3.
 
 # Folders
 This repository contains two main folders:
