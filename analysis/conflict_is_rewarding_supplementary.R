@@ -1,7 +1,7 @@
 # title: "The Experience of Cognitive Conflict is Intrinsically Rewarding (MANUSCRIPT)"
 # author of the analysis script: Marta La Pietra
 # date of creation: August 28, 2025
-# data of update: December 11, 2025
+# data of update: March 3, 2026
 
 #----------------------------------------------------------------------
 # Install packages
@@ -64,6 +64,7 @@ dir_analysis <- ("/GitHub/data/") # change according to your directory
 dir_parent <- str_remove(dir_analysis, "/analysis")
 dir_graphs <- str_c(dir_parent, "/graphs")
 
+
 conflict_theme <- theme_bw() +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
@@ -81,14 +82,14 @@ conflict_theme <- theme_bw() +
 ## CONFLICT TASK PERFORMANCE
 # Load
 data <- read_excel(str_c(dir_analysis, "experiments_reaction_times.xlsx"))
-data <- data[data$Experiment == "Simon", ] # Choose the experiment you want to analyse: "Stroop" OR "Simon"
+data <- data[data$Experiment == "Simon", ] #"Stroop" OR "Simon"
 
 data$Conflict_Level <- factor(data$Conflict_Level, levels = c("Low","Medium","High"))
 data$Congruency <- factor(data$Congruency, levels = c("Congruent", "Incongruent"))
 
 # Filter the data and calculate the mean and standard deviation, rounded to 2 decimals
 stats_RTs <- data %>%
-  filter(Congruency == "Incongruent") %>%
+  filter(Congruency == "Congruent") %>% # Congruent, Incongruent
   summarize(
     mean_RTs = round(mean(Reaction_Time, na.rm = TRUE), 2),
     sd_RTs = round(sd(Reaction_Time, na.rm = TRUE), 2)
@@ -107,7 +108,10 @@ cat("Standard Deviation RTs:", sd_RTs, "\n")
 data$log_RT <- log(data$Reaction_Time)
 model_log = lmer(log_RT ~ Conflict_chosen * Congruency + (1 + Block_Number |Participant), data=data, REML = FALSE, control = lmerControl(optimizer = "bobyqa",optCtrl=list(maxfun=10000000)))
 summary(model_log)
+confint(model_log, level = 0.95)
 
+plot(model_log.lme)
+qqnorm(model_log.lme, ~ranef(., level=2))
 
 # PLOT
 # Create a data frame for predictions
@@ -309,6 +313,7 @@ wide_data <- figS7_data %>%
 t_test_result <- t.test(wide_data$High, wide_data$Low, paired = TRUE)
 # View the result
 print(t_test_result)
+
 #------------------------------
 
 # Perform pairwise t-tests
