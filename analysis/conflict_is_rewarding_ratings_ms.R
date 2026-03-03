@@ -1,7 +1,7 @@
-# title: "The Experience of Cognitive conflict is intrisically rewarding (MANUSCRIPT)"
+# title: "The Experience of Cognitive Conflict is Intrinsically Rewarding (MANUSCRIPT)"
 # author of the analysis script: Marta La Pietra
 # date of creation: August 28, 2025
-# data of update: December 11, 2025
+# data of update: March 3, 2025
 
 #----------------------------------------------------------------------
 # Install packages
@@ -35,7 +35,7 @@ library(sjmisc)
 library(marginaleffects)
 
 
-# RATINGS: EFFORT & ENJOYMENT
+#--------------------------------------- "High levels of conflict are effortful and enjoyable"
 dir_analysis <- ("/GitHub/data/") # change according to your directory
 dir_parent <- str_remove(dir_analysis, "/analysis")
 dir_graphs <- str_c(dir_parent, "/graphs")
@@ -59,7 +59,7 @@ conflict_theme <- theme_bw() +
         axis.title.y = element_text(margin = margin(r = 5)),   # r = right margin
         legend.position = "none")
 
-# Example palette (customize as needed)
+# Example palette (customise as needed)
 custom_colors <- c("#023e8a","#00b4d8", "#90e0ef", "#f0f3bd", "#faa307", "#dc2f02", "#370617")  # Or use any hex codes or named colors
 
 #--------------------------------- Effort
@@ -77,6 +77,7 @@ str(ratings_experiment$Effort)
 # Cumulative Logit Model with the number of incongruent trials chosen
 model_effort <- clm(Effort ~ Conflict_chosen, data = ratings_experiment, link = "logit")
 summary(model_effort)
+confint(model_effort, level = 0.95)
 
 pred_effort <- ggpredict(model_effort, terms = "Conflict_chosen[all]")
 pred_effort$group <- factor(pred_effort$response.level)
@@ -145,9 +146,10 @@ ggsave(filename=str_c(dir_graphs, "/figure5/fig5a_legend_Simon.png"),fig5a_plot_
 #                                                                                       plot.margin    = margin(10, 20, 10, 10)), width = 15, height = 8)
 
 
-# Fit a cumultive logit model with the Normalised Accuracy/Speed values
+# Fit a cumulative logit model with the Normalised Accuracy/Speed values
 model_performance_effort <- clm(Effort~Conflict_chosen * Norm_AccuracySpeed, data = ratings_experiment, link = "logit")
 summary(model_performance_effort)
+confint(model_performance_effort, level = 0.95)
 
 # Check which one of the two models better fits the data
 anova (model_effort, model_performance_effort)
@@ -162,6 +164,7 @@ str(ratings_experiment$Enjoyment)
 
 model_enjoyment <- clm(Enjoyment ~ Conflict_chosen, data = ratings_experiment, link = "logit")
 summary(model_enjoyment)
+confint(model_enjoyment, level = 0.95)
 
 pred_enjoyment <- ggpredict(model_enjoyment, terms = "Conflict_chosen[all]")
 pred_enjoyment$group <- factor(pred_enjoyment$response.level)
@@ -233,6 +236,8 @@ ggsave(filename=str_c(dir_graphs, "/figure5/fig5b_legend_Simon.png"),fig5b_plot_
 
 model_performance_enjoyment <- clm(Enjoyment~Conflict_chosen * Norm_AccuracySpeed, data = ratings_experiment, link = "logit")
 summary(model_performance_enjoyment)
+confint(model_performance_enjoyment, level = 0.95)
+
 anova (model_enjoyment, model_performance_enjoyment)
 
 pred_enjoyment <- ggpredict(model2, terms = c("Conflict_chosen[all]", "Norm_AccuracySpeed"))
@@ -266,3 +271,44 @@ fig5b_plot_both
 ggsave(filename=str_c(dir_graphs, "/figure5/fig5b_Simon_Stroop.pdf"), fig5b_plot_both, width = 9, height = 5, useDingbats=F)
 ggsave(filename=str_c(dir_graphs, "/figure5/fig5b_Simon_Stroop.png"), fig5b_plot_both, width = 10, height = 5.5)
 
+#------------------------------------------------------------------------
+# "The temporal dynamics of seeking and experiencing cognitive conflict"
+time_data <- read_excel(str_c(dir_analysis, "experiments_performance_previous_block.xlsx")) 
+# Choose the experiment you want to analyse
+time_data <- time_data[time_data$Experiment == "Stroop", ] #"Stroop" OR "Simon" # CHANGE THE EXPERIMENT NAME HERE
+
+vars_to_shift <- c(
+  "Reaction_Time", "RTsCong", "RTsIncong", "ConflictEffectRTs", "Accuracy", "Accuracy_Congruent", "Accuracy_Incongruent", "ConflictEffectAccuracy", "AccuracySpeed", "Norm_AccuracySpeed",
+  "Conflict_chosen", "Conflict_Level", "Effort", "Enjoyment", "Pleasantness", "Arousal"
+)
+
+# Cumulative Link Mixed Model: Effort/Enjoyment ~ Block_Number progression
+time_data$Enjoyment <- ordered(time_data$Enjoyment)
+time_data$Effort <- ordered(time_data$Effort)
+
+model_affect_time_effort = clmm(Effort ~ Block_Number + (1| Participant), data=time_data)
+summary(model_affect_time_effort)
+confint(model_affect_time_effort, level = 0.95)
+
+model_affect_time_enjoyment = clmm(Enjoyment ~ Block_Number + (1| Participant), data=time_data)
+summary(model_affect_time_enjoyment)
+confint(model_affect_time_enjoyment, level = 0.95)
+
+anova(model_affect_time, model_affect_time_effort)
+
+#-------------------- PREVIOUS BLOCK EFFECT 
+time_data_df <- time_data %>%
+  arrange(Participant, Block_Number) %>%
+  group_by(Participant) %>%
+  mutate(across(all_of(vars_to_shift), ~lag(.x, 1), .names = "Previous_{.col}")) %>%
+  ungroup()
+time_data_df <- na.omit(time_data_df)
+
+model_choice_affect = lmer(scale(Conflict_chosen) ~ scale(Previous_Conflict_chosen) * scale(Previous_Effort) * scale(Previous_Enjoyment) + (1 + Block_Number| Participant), data=time_data_df, REML = FALSE, control = lmerControl(optimizer = "bobyqa",optCtrl=list(maxfun=10000000)))
+summary(model_choice_affect)
+confint(model_choice_affect)
+
+# with NormAccuracySpeed
+model_choice_withAccSpeed = lmer(scale(Conflict_chosen) ~ scale(Previous_Conflict_chosen) * scale(Previous_Effort) * scale(Previous_Enjoyment) * scale(Previous_Norm_AccuracySpeed) + (1 + Block_Number| Participant), data=time_data_df, REML = FALSE, control = lmerControl(optimizer = "bobyqa",optCtrl=list(maxfun=10000000)))
+summary(model_choice_withAccSpeed)
+confint(model_choice_withAccSpeed)
