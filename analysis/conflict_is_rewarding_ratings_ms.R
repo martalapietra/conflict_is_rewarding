@@ -1,7 +1,7 @@
 # title: "The Experience of Cognitive Conflict is Intrinsically Rewarding (MANUSCRIPT)"
 # author of the analysis script: Marta La Pietra
 # date of creation: August 28, 2025
-# data of update: March 3, 2025
+# data of update: March 3, 2026
 
 #----------------------------------------------------------------------
 # Install packages
@@ -312,3 +312,4 @@ confint(model_choice_affect)
 model_choice_withAccSpeed = lmer(scale(Conflict_chosen) ~ scale(Previous_Conflict_chosen) * scale(Previous_Effort) * scale(Previous_Enjoyment) * scale(Previous_Norm_AccuracySpeed) + (1 + Block_Number| Participant), data=time_data_df, REML = FALSE, control = lmerControl(optimizer = "bobyqa",optCtrl=list(maxfun=10000000)))
 summary(model_choice_withAccSpeed)
 confint(model_choice_withAccSpeed)
+
