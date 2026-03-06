@@ -1,5 +1,9 @@
 # The experience of cognitive conflict is intrinsically rewarding
-Data and analysis scripts for the preprint "The experience of cognitive conflict is intrinsically rewarding" - DOI: https://doi.org/10.31234/osf.io/b83mn_v3.
+Data and analysis scripts for the preprint "The experience of cognitive conflict is intrinsically rewarding" 
+Authors: La Pietra, M., Vives, M. L., Molinaro, N., Ruzzoli, M. (2025)
+DOI: https://doi.org/10.31234/osf.io/b83mn_v3.
+
+This research is supported through the SweetC project (PID2020-114717RA-I00 /AEI/ 10.13039/501100011033 to Ruzzoli, M.) funded by the Ministerio de Ciencia e Innovación (MICIIN) and the Agencia Estatal de Investigación (AEI), and by the Basque Government through the BERC 2022-2025 program and the Spanish State Research Agency through BCBL Severo Ochoa excellence accreditation CEX2020-001010-S. 
 
 # Folders
 This repository contains two main folders:
