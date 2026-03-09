@@ -1,7 +1,17 @@
-# title: "The Experience of Cognitive Conflict is Intrinsically Rewarding (MANUSCRIPT)"
-# author of the analysis script: Marta La Pietra
+# This analysis script pertains to the Research Project "The Sweet Spot of Cognitive Conflict (SweetC)" 
+# Project Number: (PID2020-114717RA-I00 /AEI/ 10.13039/501100011033 to Ruzzoli M) 
+# funded by the Ministerio de Ciencia e Innovación (MICIIN) and the Agencia Estatal de Investigación (AEI)
+# and by the Basque Government through the BERC 2022-2025 program and the Spanish State Research Agency 
+# through BCBL Severo Ochoa excellence accreditation CEX2020-001010-S.
+
+# Title of the manuscript: "The Experience of Cognitive conflict is intrinsically rewarding"
+# doi: https://doi.org/10.31234/osf.io/b83mn_v3
+# Authors: La Pietra, M., Vives, M. L., Molinaro, N., Ruzzoli, M. (2025)
+
+# Author of the analysis script: Marta La Pietra (she/her/hers)
+
 # date of creation: August 28, 2025
-# data of update: March 3, 2026
+# data of update: March 9, 2026
 
 #----------------------------------------------------------------------
 # Install packages
@@ -30,6 +40,8 @@ install.packages("sjPlot")       # tab_model
 install.packages("rstatix")      # cohen's d
 install.packages("ggridges")     # density plot
 install.packages("tidytext")
+install.packages("DHARMa")
+install.packages("performance")
 
 # Libraries
 library(ggbeeswarm)
@@ -57,10 +69,12 @@ library(sjPlot)       # tab_model
 library(rstatix)      # cohen's d
 library(ggridges)     # density plot
 library(tidytext)
+library(DHARMa)
+library(performance)
 
 
 # Specify relative paths
-dir_analysis <- ("/GitHub/data/") # change according to your directory
+dir_analysis <- ("C:/Users/Marta/Nextcloud/Shared_SweetC/Experiments/ExpPrefer/GitHub/data/") # change according to your directory
 dir_parent <- str_remove(dir_analysis, "/analysis")
 dir_graphs <- str_c(dir_parent, "/graphs")
 
@@ -82,7 +96,7 @@ conflict_theme <- theme_bw() +
 ## CONFLICT TASK PERFORMANCE
 # Load
 data <- read_excel(str_c(dir_analysis, "experiments_reaction_times.xlsx"))
-data <- data[data$Experiment == "Simon", ] #"Stroop" OR "Simon"
+data <- data[data$Experiment == "Stroop", ] #"Stroop" OR "Simon"
 
 data$Conflict_Level <- factor(data$Conflict_Level, levels = c("Low","Medium","High"))
 data$Congruency <- factor(data$Congruency, levels = c("Congruent", "Incongruent"))
@@ -106,12 +120,11 @@ cat("Standard Deviation RTs:", sd_RTs, "\n")
 
 # Model with the number of incongruent trials chosen
 data$log_RT <- log(data$Reaction_Time)
-model_log = lmer(log_RT ~ Conflict_chosen * Congruency + (1 + Block_Number |Participant), data=data, REML = FALSE, control = lmerControl(optimizer = "bobyqa",optCtrl=list(maxfun=10000000)))
-summary(model_log)
-confint(model_log, level = 0.95)
-
-plot(model_log.lme)
-qqnorm(model_log.lme, ~ranef(., level=2))
+model_log_block = lmer(log_RT ~ Conflict_chosen * Congruence + (1  +Block_Number|Participant), data=data, REML = FALSE, control = lmerControl(optimizer = "bobyqa",optCtrl=list(maxfun=10000000)))
+summary(model_log_block)
+confint(model_log_block, level = 0.95)
+# Check assumptions
+check_model(model_log_block)
 
 # PLOT
 # Create a data frame for predictions
@@ -228,7 +241,7 @@ ggsave(filename=str_c(dir_graphs, "/supplementary/figS2b_legend.png"), figS2b_pl
 
 ########################################################
 # For pilot data: Supplementary Figure 7
-dir_analysis <- ("/GitHub/data/") # change according to your directory
+dir_analysis <- ("C:/Users/Marta/Nextcloud/Shared_SweetC/Experiments/ExpPrefer/GitHub/data/") # change according to your directory
 dir_parent <- str_remove(dir_analysis, "/analysis")
 dir_graphs <- str_c(dir_parent, "/graphs")
 # CONFLICT PROPORTIONS PILOTS
