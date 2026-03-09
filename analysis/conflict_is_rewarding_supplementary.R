@@ -74,7 +74,7 @@ library(performance)
 
 
 # Specify relative paths
-dir_analysis <- ("C:/Users/Marta/Nextcloud/Shared_SweetC/Experiments/ExpPrefer/GitHub/data/") # change according to your directory
+dir_analysis <- ("/GitHub/data/") # change according to your directory
 dir_parent <- str_remove(dir_analysis, "/analysis")
 dir_graphs <- str_c(dir_parent, "/graphs")
 
@@ -241,7 +241,7 @@ ggsave(filename=str_c(dir_graphs, "/supplementary/figS2b_legend.png"), figS2b_pl
 
 ########################################################
 # For pilot data: Supplementary Figure 7
-dir_analysis <- ("C:/Users/Marta/Nextcloud/Shared_SweetC/Experiments/ExpPrefer/GitHub/data/") # change according to your directory
+dir_analysis <- ("/GitHub/data/") # change according to your directory
 dir_parent <- str_remove(dir_analysis, "/analysis")
 dir_graphs <- str_c(dir_parent, "/graphs")
 # CONFLICT PROPORTIONS PILOTS
@@ -404,4 +404,5 @@ figS7_plot_sign_chance
 
 ggsave(filename=str_c(dir_graphs, "/supplementary/figS7_sign_chance.pdf"), figS7_plot_sign_chance, width = 7, height = 7, useDingbats=F)
 ggsave(filename=str_c(dir_graphs, "/supplementary/figS7_sign_chance.png"), figS7_plot_sign_chance, width = 7, height = 7)
+
 
