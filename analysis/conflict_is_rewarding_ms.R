@@ -1,7 +1,17 @@
-# title: "The Experience of Cognitive conflict is intrinsically rewarding (MANUSCRIPT)"
-# author of the analysis script: Marta La Pietra
+# This analysis script pertains to the Research Project "The Sweet Spot of Cognitive Conflict (SweetC)" 
+# Project Number: (PID2020-114717RA-I00 /AEI/ 10.13039/501100011033 to Ruzzoli M) 
+# funded by the Ministerio de Ciencia e Innovación (MICIIN) and the Agencia Estatal de Investigación (AEI)
+# and by the Basque Government through the BERC 2022-2025 program and the Spanish State Research Agency 
+# through BCBL Severo Ochoa excellence accreditation CEX2020-001010-S.
+
+# Title of the manuscript: "The Experience of Cognitive conflict is intrinsically rewarding"
+# doi: https://doi.org/10.31234/osf.io/b83mn_v3
+# Authors: La Pietra, M., Vives, M. L., Molinaro, N., Ruzzoli, M. (2025)
+
+# Author of the analysis script: Marta La Pietra (she/her/hers)
+
 # date of creation: August 28, 2025
-# data of update: March 03, 2026
+# data of update: March 9, 2026
 
 #----------------------------------------------------------------------
 # Install packages
@@ -16,6 +26,8 @@ install.packages("ggsignif")
 install.packages("ggsignif")
 install.packages("beeswarm")
 install.packages("effsize")
+install.packages("lmerTest")     # mixed-effects regressions
+install.packages("lme4")
 
 # Libraries
 library(tidyverse)    # tidy functions
@@ -28,10 +40,13 @@ library(ggbeeswarm)
 library(ggsignif)
 library(beeswarm)
 library(effsize)
+library(rstatix)
+library(lmerTest)     # mixed-effects regressions
+library(lme4)
 
 ## Data
 # Specify relative paths
-dir_analysis <- ("/GitHub/data/") # change according to your directory
+dir_analysis <- ("C:/Users/Marta/Nextcloud/Shared_SweetC/Experiments/ExpPrefer/GitHub/data/") # change according to your directory
 dir_parent <- str_remove(dir_analysis, "/analysis")
 dir_graphs <- str_c(dir_parent, "/graphs")
 
@@ -41,14 +56,14 @@ dir_graphs <- str_c(dir_parent, "/graphs")
 data <- read_excel(str_c(dir_analysis, "experiments_conflict_proportions.xlsx")) # pilots_conflict_proportions # experiments_conflict_proportions
 
 # Choose the experiment you want to analyse
-data <- data[data$Experiment == "Simon", ] #"Stroop" OR "Simon" # CHANGE THE EXPERIMENT NAME HERE
+data <- data[data$Experiment == "Stroop", ] #"Stroop" OR "Simon" # CHANGE THE EXPERIMENT NAME HERE
 
 plot_width = 6
 plot_height = 6
 
-# Define the colour palette
+# Define the color palette
 conflict <- c("Low", "Medium", "High")
-# Define the colour palette
+# Define the color palette
 palette <- c("#F64436","#FFB205", "#00BFC4")
 
 conflict_theme <- theme_bw() +
@@ -109,28 +124,58 @@ ggsave(filename=str_c(dir_graphs, "/figure2/fig2.png"), fig2_plot, width = 6, he
 
 #--------------------------
 # ONE-WAY ANOVA
+fig2_data %>%
+  group_by(Conflict_Level) %>%
+  shapiro_test(Proportion)
+
 # Compute the analysis of variance
 res.aov <- aov(Proportion ~ Conflict_Level, data = fig2_data)
 # Summary of the analysis
 summary(res.aov)
+shapiro.test(residuals(res.aov))
+car::leveneTest(Proportion ~ Conflict_Level, data = fig2_data) 
 
-#Effect size calculation
+#Effect size calculation (eta squared) for the one-way ANOVA
 a <- summary(res.aov)
 SS_effect <- a[[1]]["Conflict_Level", "Sum Sq"]
 SS_total  <- sum(a[[1]][, "Sum Sq"])
 eta_sq <- SS_effect / SS_total
 eta_sq
 
+# Observations are not independent: Repeated Measures ANOVA is more appropriate
+rm = aov(Proportion ~ Conflict_Level + Error(Participant), data = fig2_data)
+summary(rm)
+
+# Check assumption of sphericity
+res <- anova_test(data = fig2_data, dv = Proportion, wid = Participant, within = Conflict_Level)
+res
+# If Mauchly's Test for Sphericity has p < 0.05 and W > 0.75, use Hyun-Feldt (HF) correction; ges = Generalized Eta Squared
+get_anova_table(res, correction = "HF")
+
 # POST-HOC T-TESTS
 # Reshape the data to wide format
 wide_data <- fig2_data %>%
   pivot_wider(names_from = Conflict_Level, values_from = Proportion)
 
-# Perform the paired t-test
-t_test_result <- t.test(wide_data$High, wide_data$Medium, paired = TRUE) # Change the conflict level: wide_data$High, wide_data$Medium, wide_data$Low
-# View the result
-print(t_test_result)
+# Perform the paired t-test, Bonferroni corrected
+posthoc <- fig2_data %>%
+  pairwise_t_test(
+    Proportion ~ Conflict_Level,
+    paired = TRUE,
+    p.adjust.method = "bonferroni"
+  )
+print(posthoc)
+
+# Check the C.I. and the effect size: Cohen's d
+t1 <- t.test(wide_data$High, wide_data$Medium, paired = TRUE)
+t1
 effsize::cohen.d(wide_data$High, wide_data$Medium, paired = TRUE)
+t2 <- t.test(wide_data$High, wide_data$Low, paired = TRUE)
+t2
+effsize::cohen.d(wide_data$High, wide_data$Low, paired = TRUE)
+t3 <- t.test(wide_data$Medium, wide_data$Low, paired = TRUE)
+t3
+effsize::cohen.d(wide_data$Medium, wide_data$Low, paired = TRUE)
 
 #------------------------------
 # Perform pairwise t-tests
@@ -217,7 +262,7 @@ ggsave(filename=str_c(dir_graphs, "/figure2/fig2_sign_chance.png"), fig2_plot_si
 
 #---------------------------------------------------------
 # "The ultimate choice shows an unequivocal preference for cognitive conflict"
-dir_analysis <- ("/GitHub/data/") # change according to your directory
+dir_analysis <- ("C:/Users/Marta/Nextcloud/Shared_SweetC/Experiments/ExpPrefer/GitHub/data/") # change according to your directory
 dir_parent <- str_remove(dir_analysis, "/analysis")
 dir_graphs <- str_c(dir_parent, "/graphs")
 final_slider <- read_excel(str_c(dir_analysis, "experiment2_final_choice_conflict.xlsx"))
@@ -229,9 +274,9 @@ total_possible_responses <- 100
 plot_width = 6
 plot_height = 6
 
-# Define the colour palette
+# Define the color palette
 conflict <- c("Low", "Medium", "High")
-# Define the colour palette
+# Define the color palette
 palette <- c("#F64436","#FFB205", "#00BFC4")
 
 conflict_theme <- theme_bw() +
@@ -247,7 +292,7 @@ conflict_theme <- theme_bw() +
         axis.title.y = element_text(margin = margin(r = 5)),   # r = right margin
         legend.position = "none")
 
-# Summarise the data: Calculate total count per Response and Slider
+# Summarize the data: Calculate total count per Response and Slider
 fig3_data <- final_slider %>%
   group_by(Conflict_Level) %>%
   summarise(Total_Count = sum(Count), .groups = "drop")%>%
@@ -284,7 +329,14 @@ z_score <- 1.96
 lower_bound <- v - (z_score * SE_V)
 upper_bound <- v + (z_score * SE_V)
 # Output
-cat(sprintf("Intervallo di Confidenza 95%%: [%.3f, %.3f]\n", lower_bound, upper_bound))
+cat(sprintf("Confidence Interval 95%%: [%.3f, %.3f]\n", lower_bound, upper_bound))
+
+
+# Number of categories (conflict levels)
+k <- length(observed_frequencies_all)
+# Expected frequency for category 
+expected_freq <- n / k
+print(paste("Expected frequency for category:", expected_freq))
 
 #----------------------------------------- Final choice's proportions
 final_slider_prop <- read_excel(str_c(dir_analysis, "experiment2_final_choice_conflict_proportions.xlsx"))
@@ -370,7 +422,7 @@ chance_level <- 0.33
 # Get unique conditions
 conditions <- unique(final_slider_prop$Conflict_Level)
 
-# Initialise an empty list to store p-values
+# Initialize an empty list to store p-values
 p_values <- list()
 
 # Perform one-sample t-tests for each condition
@@ -410,7 +462,7 @@ ggsave(filename=str_c(dir_graphs, "/figure3/fig3_sign.png"), fig3b_plot_sign, wi
 # "Preference for higher levels of conflict does not dissolve over time"
 time_data <- read_excel(str_c(dir_analysis, "experiments_performance_previous_block.xlsx")) 
 # Choose the experiment you want to analyse
-time_data <- time_data[time_data$Experiment == "Strop", ] #"Stroop" OR "Simon" # CHANGE THE EXPERIMENT NAME HERE
+time_data <- time_data[time_data$Experiment == "Stroop", ] #"Stroop" OR "Simon" # CHANGE THE EXPERIMENT NAME HERE
 
 vars_to_shift <- c(
   "Reaction_Time", "RTsCong", "RTsIncong", "ConflictEffectRTs", "Accuracy", "Accuracy_Congruent", "Accuracy_Incongruent", "ConflictEffectAccuracy", "AccuracySpeed", "Norm_AccuracySpeed",
