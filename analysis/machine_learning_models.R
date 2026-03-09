@@ -1,5 +1,15 @@
-# title: "The Experience of Cognitive Conflict is Intrinsically Rewarding (MANUSCRIPT)"
-# author of the analysis script: Marta La Pietra
+# This analysis script pertains to the Research Project "The Sweet Spot of Cognitive Conflict (SweetC)" 
+# Project Number: (PID2020-114717RA-I00 /AEI/ 10.13039/501100011033 to Ruzzoli M) 
+# funded by the Ministerio de Ciencia e Innovación (MICIIN) and the Agencia Estatal de Investigación (AEI)
+# and by the Basque Government through the BERC 2022-2025 program and the Spanish State Research Agency 
+# through BCBL Severo Ochoa excellence accreditation CEX2020-001010-S.
+
+# Title of the manuscript: "The Experience of Cognitive conflict is intrinsically rewarding"
+# doi: https://doi.org/10.31234/osf.io/b83mn_v3
+# Authors: La Pietra, M., Vives, M. L., Molinaro, N., Ruzzoli, M. (2025)
+
+# Author of the analysis script: Marta La Pietra (she/her/hers)
+
 # date of creation: August 28, 2025
 # data of update: December 11, 2025
 
@@ -174,6 +184,7 @@ write_csv(df_test_nn, str_c(data_dir, "/df_test.csv"))
 
 # Session Info
 writeLines(capture.output(sessionInfo()), str_c(data_dir, "/sessionInfo.txt")) # session info
+
 
 
 
