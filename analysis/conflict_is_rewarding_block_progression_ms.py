@@ -13,7 +13,7 @@
 # Author of the analysis script: Marta La Pietra (she/her/hers)
 
 # date of creation: August 28, 2025
-# data of update: March 03, 2026
+# data of update: March 9, 2026
 """
 import pandas as pd
 import numpy as np
@@ -27,12 +27,9 @@ df = pd.read_excel(file_excel)
 experiment = df[df['Experiment'] == "Stroop"] ## CHANGE THE EXPERIMENT NAME HERE: Simon or Stroop
 experiment = experiment.drop(columns=["Experiment"])
 
-column_order = ['Participant', '1-2', '2-3', '3-4', '4-5', '5-6','6-7','7-8','8-9','9-10','1-10']
+column_order = ['Participant', '2-1', '3-2', '4-3', '5-4', '6-5','7-6','8-7','9-8','10-9','10-1']
 experiment = experiment[column_order]
-only_block1_10 = experiment[['Participant','1-10']]
-experiment = experiment.rename(columns={'1-2': '2-1','2-3': '3-2','3-4': '4-3',
-                                        '4-5': '5-4','5-6': '6-5','6-7': '7-6',
-                                        '7-8': '8-7','8-9': '10-9','1-10': '10-1'})
+only_block1_10 = experiment[['Participant','10-1']]
 
 
 ### Figure 4: Differences in choices for each participant during the experimental progression in experiment 1 (Simon, A) and experiment 2 (Stroop, B). 
@@ -128,6 +125,7 @@ fig_path_pdf = os.path.join(fig_folder, "fig4B.pdf")
 plt.savefig(fig_path_pdf, format='pdf', bbox_inches='tight')
 fig_path_png = os.path.join(fig_folder, "fig4B.png")
 plt.savefig(fig_path_png, format='png', dpi=300, bbox_inches='tight')
+
 
 
 
