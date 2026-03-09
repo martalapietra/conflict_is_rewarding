@@ -1,7 +1,17 @@
-# title: "The Experience of Cognitive Conflict is Intrinsically Rewarding (MANUSCRIPT)"
-# author of the analysis script: Marta La Pietra
+# This analysis script pertains to the Research Project "The Sweet Spot of Cognitive Conflict (SweetC)" 
+# Project Number: (PID2020-114717RA-I00 /AEI/ 10.13039/501100011033 to Ruzzoli M) 
+# funded by the Ministerio de Ciencia e Innovación (MICIIN) and the Agencia Estatal de Investigación (AEI)
+# and by the Basque Government through the BERC 2022-2025 program and the Spanish State Research Agency 
+# through BCBL Severo Ochoa excellence accreditation CEX2020-001010-S.
+
+# Title of the manuscript: "The Experience of Cognitive conflict is intrinsically rewarding"
+# doi: https://doi.org/10.31234/osf.io/b83mn_v3
+# Authors: La Pietra, M., Vives, M. L., Molinaro, N., Ruzzoli, M. (2025)
+
+# Author of the analysis script: Marta La Pietra (she/her/hers)
+
 # date of creation: August 28, 2025
-# data of update: March 3, 2026
+# data of update: March 9, 2026
 
 #----------------------------------------------------------------------
 # Install packages
@@ -33,10 +43,13 @@ library(lmerTest)     # mixed-effects regressions
 library(lme4)
 library(sjmisc)
 library(marginaleffects)
+library(VGAM)
+library(MASS)
+library(brant)
 
-
-#--------------------------------------- "High levels of conflict are effortful and enjoyable"
-dir_analysis <- ("/GitHub/data/") # change according to your directory
+#--------------------------------------- 
+# "High levels of conflict are effortful and enjoyable"
+dir_analysis <- ("C:/Users/Marta/Nextcloud/Shared_SweetC/Experiments/ExpPrefer/GitHub/data/") # change according to your directory
 dir_parent <- str_remove(dir_analysis, "/analysis")
 dir_graphs <- str_c(dir_parent, "/graphs")
 
@@ -59,7 +72,7 @@ conflict_theme <- theme_bw() +
         axis.title.y = element_text(margin = margin(r = 5)),   # r = right margin
         legend.position = "none")
 
-# Example palette (customise as needed)
+# Example palette (customize as needed)
 custom_colors <- c("#023e8a","#00b4d8", "#90e0ef", "#f0f3bd", "#faa307", "#dc2f02", "#370617")  # Or use any hex codes or named colors
 
 #--------------------------------- Effort
@@ -79,6 +92,29 @@ model_effort <- clm(Effort ~ Conflict_chosen, data = ratings_experiment, link = 
 summary(model_effort)
 confint(model_effort, level = 0.95)
 
+model_effort_assumption <- polr(Effort ~ Conflict_chosen, data = ratings_experiment, Hess=TRUE)
+brant(model_effort_assumption)
+
+#----------------------------- For experiment 2 where assumptions of proportional odds are violated (χ²(5) = 14.87, p < 0.001)
+ratings_experiment <- ratings[ratings$Experiment == "Stroop", ] 
+# Check the variable type for the rating
+str(ratings_experiment$Effort)
+# Check the distribution of the ratings
+table(ratings_experiment$Effort)
+# Convert the ratings into factors
+ratings_experiment$Effort <- factor(as.character(ratings_experiment$Effort),
+                                    levels = as.character(1:7),
+                                    ordered = TRUE)
+# Check if the conversion happened correctly
+str(ratings_experiment$Effort)
+
+# Fit the partial proportional odds model
+model_vgam <- vglm(Effort ~ Conflict_chosen, 
+                   family = cumulative(parallel = FALSE), 
+                   data = ratings_experiment)
+summary(model_vgam)
+
+#---------------------------------------------- Prepare data for plots
 pred_effort <- ggpredict(model_effort, terms = "Conflict_chosen[all]")
 pred_effort$group <- factor(pred_effort$response.level)
 unique(pred_effort$x)
@@ -146,7 +182,7 @@ ggsave(filename=str_c(dir_graphs, "/figure5/fig5a_legend_Simon.png"),fig5a_plot_
 #                                                                                       plot.margin    = margin(10, 20, 10, 10)), width = 15, height = 8)
 
 
-# Fit a cumulative logit model with the Normalised Accuracy/Speed values
+# Fit a cumultive logit model with the Normalised Accuracy/Speed values
 model_performance_effort <- clm(Effort~Conflict_chosen * Norm_AccuracySpeed, data = ratings_experiment, link = "logit")
 summary(model_performance_effort)
 confint(model_performance_effort, level = 0.95)
@@ -166,6 +202,11 @@ model_enjoyment <- clm(Enjoyment ~ Conflict_chosen, data = ratings_experiment, l
 summary(model_enjoyment)
 confint(model_enjoyment, level = 0.95)
 
+# Test assumption of proportional odds
+model_enjoyment_assumption <- polr(Enjoyment ~ Conflict_chosen, data = ratings_experiment, Hess=TRUE)
+brant(model_enjoyment_assumption)
+
+#---------------- Prepare data for plots
 pred_enjoyment <- ggpredict(model_enjoyment, terms = "Conflict_chosen[all]")
 pred_enjoyment$group <- factor(pred_enjoyment$response.level)
 unique(pred_enjoyment$x)
@@ -233,15 +274,12 @@ ggsave(filename=str_c(dir_graphs, "/figure5/fig5b_legend_Simon.png"),fig5b_plot_
 #                                                                                         legend.text    = element_text(size = 16),
 #                                                                                         plot.margin    = margin(10, 20, 10, 10)), width = 15, height = 8)
 
-
 model_performance_enjoyment <- clm(Enjoyment~Conflict_chosen * Norm_AccuracySpeed, data = ratings_experiment, link = "logit")
 summary(model_performance_enjoyment)
 confint(model_performance_enjoyment, level = 0.95)
 
+# Likelihood ratio test
 anova (model_enjoyment, model_performance_enjoyment)
-
-pred_enjoyment <- ggpredict(model2, terms = c("Conflict_chosen[all]", "Norm_AccuracySpeed"))
-plot(pred_enjoyment) + theme(legend.position = "bottom")
 
 #-------------------- SAVE PLOTS
 ############### !Comment/Uncomment depending on which task you are analysing! #######################
@@ -312,4 +350,3 @@ confint(model_choice_affect)
 model_choice_withAccSpeed = lmer(scale(Conflict_chosen) ~ scale(Previous_Conflict_chosen) * scale(Previous_Effort) * scale(Previous_Enjoyment) * scale(Previous_Norm_AccuracySpeed) + (1 + Block_Number| Participant), data=time_data_df, REML = FALSE, control = lmerControl(optimizer = "bobyqa",optCtrl=list(maxfun=10000000)))
 summary(model_choice_withAccSpeed)
 confint(model_choice_withAccSpeed)
-
