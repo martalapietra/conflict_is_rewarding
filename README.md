@@ -7,7 +7,7 @@ This research is supported through the SweetC project (PID2020-114717RA-I00 /AEI
 This repository contains two main folders:
 1. **data**: cleaned data from all experiments and pilot experiments. An additional ReadMe.txt file detailing the contents of each file is available.
 2. **analysis**: R and Python scripts for model creation, data analysis and visualisation.
-3. **preregistration**: PDF files of the preregistered protocol and a time-stamped document thereof. 
+3. **preregistration**: PDF file of the preregistered protocol and a time-stamped document thereof. 
 
 ## Note on Model Files
 The supervised machine learning classifiers used in this project, i.e., Neural Network (NN), Support Vector Machine (SVM), and K-Nearest Neighbours (K-NN), are too large to be uploaded to this repository.  
