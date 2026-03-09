@@ -46,7 +46,7 @@ library(lme4)
 
 ## Data
 # Specify relative paths
-dir_analysis <- ("C:/Users/Marta/Nextcloud/Shared_SweetC/Experiments/ExpPrefer/GitHub/data/") # change according to your directory
+dir_analysis <- ("/GitHub/data/") # change according to your directory
 dir_parent <- str_remove(dir_analysis, "/analysis")
 dir_graphs <- str_c(dir_parent, "/graphs")
 
@@ -262,7 +262,7 @@ ggsave(filename=str_c(dir_graphs, "/figure2/fig2_sign_chance.png"), fig2_plot_si
 
 #---------------------------------------------------------
 # "The ultimate choice shows an unequivocal preference for cognitive conflict"
-dir_analysis <- ("C:/Users/Marta/Nextcloud/Shared_SweetC/Experiments/ExpPrefer/GitHub/data/") # change according to your directory
+dir_analysis <- ("/GitHub/data/") # change according to your directory
 dir_parent <- str_remove(dir_analysis, "/analysis")
 dir_graphs <- str_c(dir_parent, "/graphs")
 final_slider <- read_excel(str_c(dir_analysis, "experiment2_final_choice_conflict.xlsx"))
@@ -479,4 +479,5 @@ time_data_df <- na.omit(time_data_df)
 model_time = lmer(scale(Conflict_chosen) ~ scale(Block_Number) + (1 | Participant), data=time_data, REML = FALSE, control = lmerControl(optimizer = "bobyqa",optCtrl=list(maxfun=10000000)))
 summary(model_time)
 confint(model_time, level = 0.95)
+
 
