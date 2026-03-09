@@ -49,7 +49,7 @@ library(brant)
 
 #--------------------------------------- 
 # "High levels of conflict are effortful and enjoyable"
-dir_analysis <- ("C:/Users/Marta/Nextcloud/Shared_SweetC/Experiments/ExpPrefer/GitHub/data/") # change according to your directory
+dir_analysis <- ("/GitHub/data/") # change according to your directory
 dir_parent <- str_remove(dir_analysis, "/analysis")
 dir_graphs <- str_c(dir_parent, "/graphs")
 
@@ -350,3 +350,4 @@ confint(model_choice_affect)
 model_choice_withAccSpeed = lmer(scale(Conflict_chosen) ~ scale(Previous_Conflict_chosen) * scale(Previous_Effort) * scale(Previous_Enjoyment) * scale(Previous_Norm_AccuracySpeed) + (1 + Block_Number| Participant), data=time_data_df, REML = FALSE, control = lmerControl(optimizer = "bobyqa",optCtrl=list(maxfun=10000000)))
 summary(model_choice_withAccSpeed)
 confint(model_choice_withAccSpeed)
+
