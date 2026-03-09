@@ -5,7 +5,7 @@ This research is supported through the SweetC project (PID2020-114717RA-I00 /AEI
 
 # Folders
 This repository contains two main folders:
-1. **data**: cleaned data from all experiments and pilot experiments;
+1. **data**: cleaned data from all experiments and pilot experiments. An additional ReadMe.txt file describing in detail the content of each file is available.
 2. **analysis**: R and Python scripts for model creation, data analysis and visualisation.
 
 ## Note on Model Files
