@@ -29,7 +29,6 @@ install.packages("caret")
 install.packages("doParallel")
 install.packages("readxl")
 install.packages("tidyverse")
-install.packages("tidyverse")
 
 library(tidyverse)
 library(caret)
@@ -184,6 +183,7 @@ write_csv(df_test_nn, str_c(data_dir, "/df_test.csv"))
 
 # Session Info
 writeLines(capture.output(sessionInfo()), str_c(data_dir, "/sessionInfo.txt")) # session info
+
 
 
 
